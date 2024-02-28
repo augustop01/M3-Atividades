@@ -2,41 +2,43 @@ package br.senai.sc.m3s04.model;
 
 import jakarta.persistence.*;
 
+import java.util.UUID;
+
 @Entity
-@Table(name = "AVALIAÇÃO")
-public class Review {
+@Table(name = "AVALIACAO")
+public class Rating {
     @Id
-    @Column(nullable = false, unique = true)
-    private String id;
+    @Column(nullable = false, length = 36, unique = true)
+    private String guid;
 
     @Column(nullable = false, columnDefinition = "INTEGER CHECK (rate >= 1 AND rate <= 5)")
     private Integer rating;
 
     @ManyToOne
-    @Column(nullable = false)
+    @JoinColumn(name = "rated_by", referencedColumnName= "guid",nullable = false)
     private Person ratedBy;
 
     @ManyToOne
-    @Column(nullable = false)
+    @JoinColumn(name = "rated_book", referencedColumnName= "guid",nullable = false)
     private Book ratedBook;
 
-    public Review(){
+    public Rating(){
 
     }
 
-    public Review(String id, Integer rating, Person ratedBy, Book ratedBook) {
-        this.id = id;
+    public Rating(Integer rating, Person ratedBy, Book ratedBook) {
+        this.guid = UUID.randomUUID().toString();
         this.rating = rating;
         this.ratedBy = ratedBy;
         this.ratedBook = ratedBook;
     }
 
-    public String getId() {
-        return id;
+    public String getGuid() {
+        return guid;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setGuid(String guid) {
+        this.guid = guid;
     }
 
     public Integer getRating() {

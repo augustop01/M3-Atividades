@@ -6,14 +6,14 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.UUID;
 
 @Entity
-@Table(name = "USUÁRIO")
+@Table(name = "USUARIO")
 public class Person implements UserDetails {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(nullable = false, unique = true)
-    private Integer id;
+    @Column(nullable = false, length = 36, unique = true)
+    private String guid;
     @Column(nullable = false)
     private String name;
     @Column(nullable = false, unique = true)
@@ -27,19 +27,15 @@ public class Person implements UserDetails {
 
     }
 
-    public Person(Integer id, String name, String email, String password) {
-        this.id = id;
+    public Person(String name, String email, String password) {
+        this.guid = UUID.randomUUID().toString();
         this.name = name;
         this.email = email;
         this.password = password;
     }
 
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
+    public String getGuid() {
+        return guid;
     }
 
     public String getName() {
