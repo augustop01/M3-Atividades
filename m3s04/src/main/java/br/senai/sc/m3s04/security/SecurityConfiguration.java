@@ -18,12 +18,11 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.authorizeHttpRequests(authorization ->
-                authorization.requestMatchers(HttpMethod.POST, "/person").permitAll()
+                authorization.requestMatchers(HttpMethod.POST, "/user").permitAll()
                         .anyRequest().authenticated());
         httpSecurity.httpBasic(Customizer.withDefaults());
         httpSecurity.csrf(AbstractHttpConfigurer::disable);
         return httpSecurity.build();
-
     }
 
     @Bean

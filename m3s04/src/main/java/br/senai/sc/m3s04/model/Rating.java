@@ -5,13 +5,12 @@ import jakarta.persistence.*;
 import java.util.UUID;
 
 @Entity
-@Table(name = "AVALIACAO")
 public class Rating {
     @Id
     @Column(nullable = false, length = 36, unique = true)
     private String guid;
 
-    @Column(nullable = false, columnDefinition = "INTEGER CHECK (rate >= 1 AND rate <= 5)")
+    @Column(nullable = false)
     private Integer rating;
 
     @ManyToOne

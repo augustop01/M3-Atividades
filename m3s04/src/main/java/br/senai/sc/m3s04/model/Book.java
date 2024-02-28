@@ -7,11 +7,9 @@ import java.util.Set;
 import java.util.UUID;
 
 @Entity
-@Table(name = "LIVRO")
 public class Book {
     @Id
     @Column(nullable = false, length = 36, unique = true)
-    @GeneratedValue()
     private String guid;
 
     @Column(nullable = false)
@@ -68,5 +66,13 @@ public class Book {
 
     public void setPublishedYear(Integer publishedYear) {
         this.publishedYear = publishedYear;
+    }
+
+    public Set<Rating> getRatingList() {
+        return ratingList;
+    }
+
+    public void setRatingList(Set<Rating> ratingList) {
+        this.ratingList = ratingList;
     }
 }
