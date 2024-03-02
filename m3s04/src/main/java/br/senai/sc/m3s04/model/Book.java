@@ -1,5 +1,6 @@
 package br.senai.sc.m3s04.model;
 
+import br.senai.sc.m3s04.model.dto.operations.create.CreateBookDTO;
 import jakarta.persistence.*;
 
 import java.util.HashSet;
@@ -16,7 +17,7 @@ public class Book {
     private String title;
 
     @ManyToOne
-    @JoinColumn(name = "registered_by", referencedColumnName = "guid", nullable = false)
+    @JoinColumn(name = "registered_by", referencedColumnName = "email", nullable = false)
     private Person registeredBy;
 
     @Column(nullable = false)
@@ -29,11 +30,11 @@ public class Book {
 
     }
 
-    public Book(String title, Person registeredBy, Integer publishedYear) {
+    public Book(CreateBookDTO createBookDTO, Person person) {
         this.guid = UUID.randomUUID().toString();
-        this.title = title;
-        this.registeredBy = registeredBy;
-        this.publishedYear = publishedYear;
+        this.title = createBookDTO.title();
+        this.registeredBy = person;
+        this.publishedYear = createBookDTO.publishedYear();
     }
 
     public String getGuid() {

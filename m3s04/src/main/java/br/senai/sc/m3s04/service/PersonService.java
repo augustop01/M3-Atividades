@@ -12,6 +12,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class PersonService implements UserDetailsService {
     private static final Logger LOGGER = LoggerFactory.getLogger(PersonService.class);
@@ -26,6 +28,12 @@ public class PersonService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException{
         return this.personRepository.findByEmail(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Nenhum usuário foi encontrado pelo e-mail: " + username));
+    }
+
+    public Person findByEmail(String email) throws UsernameNotFoundException {
+        LOGGER.info("Procurando usuário pelo email: {}...", email);
+        return this.personRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("Nenhum usuário foi encontrado pela busca por e-mail: " + email));
     }
 
     @Transactional
