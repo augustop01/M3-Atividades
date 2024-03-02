@@ -1,11 +1,12 @@
 package br.senai.sc.m3s04.model;
 
+import br.senai.sc.m3s04.model.dto.BookAvgRatingDTO;
+import br.senai.sc.m3s04.model.dto.PersonDTO;
 import br.senai.sc.m3s04.model.dto.operations.create.CreateBookDTO;
+import br.senai.sc.m3s04.repository.RatingRepository;
 import jakarta.persistence.*;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Entity
 public class Book {
@@ -25,6 +26,9 @@ public class Book {
 
     @OneToMany(mappedBy = "ratedBook")
     private Set<Rating> ratingList = new HashSet<>();
+
+    @Transient
+    private Map<Integer, Integer> calculateRatings = new HashMap<>();
 
     public Book(){
 
@@ -73,7 +77,13 @@ public class Book {
         return ratingList;
     }
 
-    public void setRatingList(Set<Rating> ratingList) {
-        this.ratingList = ratingList;
+    public Double getAverageRating(){
+        if (ratingList.isEmpty()){
+            return 0.0;
+        }
+        double sum = ratingList.stream().mapToDouble(Rating::getRating).sum();
+
+        return sum / ratingList.size();
     }
+
 }

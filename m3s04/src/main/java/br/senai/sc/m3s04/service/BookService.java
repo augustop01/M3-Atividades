@@ -2,6 +2,8 @@ package br.senai.sc.m3s04.service;
 
 import br.senai.sc.m3s04.model.Book;
 import br.senai.sc.m3s04.model.Person;
+import br.senai.sc.m3s04.model.Rating;
+import br.senai.sc.m3s04.model.dto.BookAvgRatingDTO;
 import br.senai.sc.m3s04.model.dto.BookDTO;
 import br.senai.sc.m3s04.model.dto.operations.create.CreateBookDTO;
 import br.senai.sc.m3s04.repository.BookRepository;
@@ -13,7 +15,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class BookService {
@@ -38,4 +42,11 @@ public class BookService {
         LOGGER.info("O livro '{}' foi salvo, retornando ao banco de dados...", book.getTitle());
         return new BookDTO(book);
     }
+
+    public List<BookAvgRatingDTO> listAllBooks(){
+        List<BookAvgRatingDTO> listBooks = bookRepository.findAll().stream().map(BookAvgRatingDTO::new).collect(Collectors.toList());
+        return listBooks;
+    }
+
+
 }

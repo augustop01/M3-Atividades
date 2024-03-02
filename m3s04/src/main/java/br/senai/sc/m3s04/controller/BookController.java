@@ -1,6 +1,7 @@
 package br.senai.sc.m3s04.controller;
 
 import br.senai.sc.m3s04.exceptions.UserNotFoundException;
+import br.senai.sc.m3s04.model.dto.BookAvgRatingDTO;
 import br.senai.sc.m3s04.model.dto.BookDTO;
 import br.senai.sc.m3s04.model.dto.operations.create.CreateBookDTO;
 import br.senai.sc.m3s04.service.BookService;
@@ -9,11 +10,10 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/book")
@@ -32,5 +32,11 @@ public class BookController {
             throws UserNotFoundException {
         BookDTO response = this.bookService.create(createBookDTO, userInSession);
         return ResponseEntity.created(uriComponentsBuilder.path("/book/{id}").buildAndExpand(response.guid()).toUri()).body(response);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<BookAvgRatingDTO>> listAll(){
+        List<BookAvgRatingDTO> response = this.bookService.listAllBooks();
+        return ResponseEntity.ok(response);
     }
 }
