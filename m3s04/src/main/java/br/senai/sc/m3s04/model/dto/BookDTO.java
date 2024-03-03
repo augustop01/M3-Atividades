@@ -1,7 +1,6 @@
 package br.senai.sc.m3s04.model.dto;
 
 import br.senai.sc.m3s04.model.Book;
-import br.senai.sc.m3s04.model.Person;
 
 public record BookDTO(String guid,
                       String title,

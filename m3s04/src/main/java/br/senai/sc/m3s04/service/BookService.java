@@ -1,13 +1,14 @@
 package br.senai.sc.m3s04.service;
 
+import br.senai.sc.m3s04.exceptions.BookNotFoundException;
 import br.senai.sc.m3s04.model.Book;
 import br.senai.sc.m3s04.model.Person;
 import br.senai.sc.m3s04.model.Rating;
 import br.senai.sc.m3s04.model.dto.BookAvgRatingDTO;
 import br.senai.sc.m3s04.model.dto.BookDTO;
+import br.senai.sc.m3s04.model.dto.BookRatingCountDTO;
 import br.senai.sc.m3s04.model.dto.operations.create.CreateBookDTO;
 import br.senai.sc.m3s04.repository.BookRepository;
-import br.senai.sc.m3s04.repository.RatingRepository;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,8 +16,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -48,5 +48,27 @@ public class BookService {
         return listBooks;
     }
 
+    public BookRatingCountDTO findBookById(String guid) throws BookNotFoundException {
+        Book book = bookRepository.findByGuid(guid).orElseThrow(() -> new BookNotFoundException("Nenhum livro encontrado pelo ID: " + guid));
 
+        Map<Integer, Integer> ratingCounts = calculateRatingCounts(book.getRatingList());
+
+        return new BookRatingCountDTO(
+                book.getGuid(),
+                book.getTitle(),
+                book.getRegisteredBy().getGuid(),
+                        book.getPublishedYear(),
+                        book.getAverageRating(),
+                        ratingCounts
+        );
+    }
+
+    private Map<Integer, Integer> calculateRatingCounts(Set<Rating> ratings){
+        Map<Integer, Integer> ratingCounts = new HashMap<>();
+        for(Rating rating : ratings){
+            ratingCounts.put(rating.getRating(),
+                    ratingCounts.getOrDefault(rating.getRating(), 0) + 1);
+        }
+        return ratingCounts;
+    }
 }
