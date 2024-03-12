@@ -1,5 +1,6 @@
 package br.senai.sc.m3s04.model;
 
+import br.senai.sc.m3s04.model.dto.operations.create.CreateRatingDTO;
 import jakarta.persistence.*;
 
 import java.util.UUID;
@@ -25,9 +26,9 @@ public class Rating {
 
     }
 
-    public Rating(Integer rating, Person ratedBy, Book ratedBook) {
+    public Rating(CreateRatingDTO rating, Person ratedBy, Book ratedBook) {
         this.guid = UUID.randomUUID().toString();
-        this.rating = rating;
+        this.rating = rating.setRating();
         this.ratedBy = ratedBy;
         this.ratedBook = ratedBook;
     }

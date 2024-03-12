@@ -7,8 +7,11 @@ import br.senai.sc.m3s04.model.Rating;
 import br.senai.sc.m3s04.model.dto.BookAvgRatingDTO;
 import br.senai.sc.m3s04.model.dto.BookDTO;
 import br.senai.sc.m3s04.model.dto.BookRatingCountDTO;
+import br.senai.sc.m3s04.model.dto.RatingDTO;
 import br.senai.sc.m3s04.model.dto.operations.create.CreateBookDTO;
+import br.senai.sc.m3s04.model.dto.operations.create.CreateRatingDTO;
 import br.senai.sc.m3s04.repository.BookRepository;
+import br.senai.sc.m3s04.repository.RatingRepository;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,9 +31,12 @@ public class BookService {
 
     private PersonService personService;
 
-    public BookService(BookRepository bookRepository, PersonService personService){
+    private RatingRepository ratingRepository;
+
+    public BookService(BookRepository bookRepository, PersonService personService, RatingRepository ratingRepository){
         this.bookRepository = bookRepository;
         this.personService = personService;
+        this.ratingRepository = ratingRepository;
     }
 
     @Transactional
@@ -70,5 +76,23 @@ public class BookService {
                     ratingCounts.getOrDefault(rating.getRating(), 0) + 1);
         }
         return ratingCounts;
+    }
+
+    @Transactional
+    public RatingDTO createRating(String bookGuid, CreateRatingDTO body, UserDetails userInSession) throws BookNotFoundException {
+        Book book = bookRepository.findByGuid(bookGuid)
+                .orElseThrow(() -> new BookNotFoundException("Nenhum livro encontrado com o ID: " + bookGuid));
+
+        Person ratedBy = personService.findByEmail(userInSession.getUsername());
+
+        if (ratedBy.getGuid().equals(book.getRegisteredBy().getGuid())){
+            throw new IllegalArgumentException(("O livro não pode ser avaliado pelo seu próprio autor."));
+        }
+
+        Rating rating = new Rating(body, ratedBy, book);
+
+        this.ratingRepository.save(rating);
+
+        return new RatingDTO(rating);
     }
 }

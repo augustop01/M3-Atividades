@@ -9,8 +9,6 @@ import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.Optional;
-
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)

@@ -5,7 +5,9 @@ import br.senai.sc.m3s04.exceptions.UserNotFoundException;
 import br.senai.sc.m3s04.model.dto.BookAvgRatingDTO;
 import br.senai.sc.m3s04.model.dto.BookDTO;
 import br.senai.sc.m3s04.model.dto.BookRatingCountDTO;
+import br.senai.sc.m3s04.model.dto.RatingDTO;
 import br.senai.sc.m3s04.model.dto.operations.create.CreateBookDTO;
+import br.senai.sc.m3s04.model.dto.operations.create.CreateRatingDTO;
 import br.senai.sc.m3s04.service.BookService;
 import jakarta.validation.Valid;
 import org.springframework.http.MediaType;
@@ -21,7 +23,9 @@ import java.util.List;
 @RequestMapping("/book")
 public class BookController {
 
+
     private final BookService bookService;
+
 
     public BookController(BookService bookService) {
         this.bookService = bookService;
@@ -42,9 +46,17 @@ public class BookController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<BookRatingCountDTO> findBookByGuid(@PathVariable String id) throws BookNotFoundException {
-        BookRatingCountDTO bookRatingCount = bookService.findBookById(id);
+    @GetMapping("/{guid}")
+    public ResponseEntity<BookRatingCountDTO> findBookByGuid(@PathVariable String guid) throws BookNotFoundException {
+        BookRatingCountDTO bookRatingCount = bookService.findBookById(guid);
         return ResponseEntity.ok(bookRatingCount);
+    }
+
+    @PostMapping("/{guid}/assessment")
+    public ResponseEntity<RatingDTO> createRating(@PathVariable("guid") String guid,
+                                                  @Valid @RequestBody CreateRatingDTO rating,
+                                                  @AuthenticationPrincipal UserDetails userInSession) throws BookNotFoundException {
+        RatingDTO response = this.bookService.createRating(guid, rating, userInSession);
+        return ResponseEntity.ok(response);
     }
 }
