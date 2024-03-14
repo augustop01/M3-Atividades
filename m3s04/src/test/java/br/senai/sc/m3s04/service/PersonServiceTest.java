@@ -1,46 +1,48 @@
 package br.senai.sc.m3s04.service;
+
+import static org.mockito.Mockito.verify;
 import br.senai.sc.m3s04.model.Person;
 import br.senai.sc.m3s04.model.dto.operations.create.CreatePersonDTO;
 import br.senai.sc.m3s04.repository.PersonRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.*;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import static org.mockito.Mockito.verify;
-
 @ExtendWith(MockitoExtension.class)
-public class PersonServiceTest {
-
-    @InjectMocks
-    private PersonService personService;
-
-    @Mock
-    private PasswordEncoder passwordEncoder;
+class PersonServiceTest {
 
     @Mock
     private PersonRepository personRepository;
 
+    @Mock
+    private PasswordEncoder passwordEncoder;
+
+    @InjectMocks
+    private PersonService personService;
+
     @Captor
     private ArgumentCaptor<Person> personCaptor;
 
-
     @Test
-    void createUserWithNoFail() {
-        CreatePersonDTO person =
-                new CreatePersonDTO("Teste 01", "teste01@example.com", "UmaSenhaForte");
-        String passwordEncoded = this.passwordEncoder.encode(person.password());
+    void createPersonShouldSavePersonToRepository() {
+        CreatePersonDTO createPersonDTO =
+                new CreatePersonDTO("Augusto Pires", "augusto@email.com", "aStrongPassword");
+        String encodedPassword = this.passwordEncoder.encode(createPersonDTO.password());
 
-        this.personService.create(person);
+        personService.create(createPersonDTO);
         verify(this.personRepository).save(this.personCaptor.capture());
-        Person createdPerson = this.personCaptor.getValue();
+        Person createdPerson = personCaptor.getValue();
 
-        Assertions.assertEquals(person.name(), createdPerson.getName());
-        Assertions.assertEquals(person.email(), createdPerson.getEmail());
+        Assertions.assertEquals(createPersonDTO.name(), createdPerson.getName());
+        Assertions.assertEquals(createPersonDTO.email(), createdPerson.getEmail());
         Assertions.assertNotNull(createdPerson.getGuid());
         Assertions.assertEquals(36, createdPerson.getGuid().length());
-        Assertions.assertEquals(passwordEncoded, createdPerson.getPassword());
+        Assertions.assertEquals(encodedPassword, createdPerson.getPassword());
     }
 }

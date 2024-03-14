@@ -54,6 +54,22 @@ public class Person implements UserDetails {
         return this.email;
     }
 
+    public void setGuid(String guid) {
+        this.guid = guid;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     @Override
     public boolean isAccountNonExpired() {
         return true;
