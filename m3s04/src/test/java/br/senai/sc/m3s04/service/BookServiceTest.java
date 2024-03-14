@@ -6,7 +6,9 @@ import br.senai.sc.m3s04.model.Rating;
 import br.senai.sc.m3s04.model.dto.BookAvgRatingDTO;
 import br.senai.sc.m3s04.model.dto.BookRatingCountDTO;
 import br.senai.sc.m3s04.model.dto.operations.create.CreateBookDTO;
+import br.senai.sc.m3s04.model.dto.operations.create.CreateRatingDTO;
 import br.senai.sc.m3s04.repository.BookRepository;
+import br.senai.sc.m3s04.repository.RatingRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,8 +32,14 @@ public class BookServiceTest {
     @Mock
     private BookRepository bookRepository;
 
+    @Mock
+    private RatingRepository ratingRepository;
+
     @Captor
     private ArgumentCaptor<Book> bookCaptor;
+
+    @Captor
+    private ArgumentCaptor<Rating> ratingCaptor;
 
 
     @Test
@@ -67,7 +75,6 @@ public class BookServiceTest {
         books.add(new Book(bookTwo, person));
 
         BDDMockito.given(bookRepository.findAll()).willReturn(books);
-
         List<BookAvgRatingDTO> list = bookService.listAllBooks();
 
         Assertions.assertNotNull(list);
@@ -77,9 +84,10 @@ public class BookServiceTest {
     @Test
     void findBookByIdReturnsSuccess() throws BookNotFoundException {
         Person person = new Person();
+        person.setGuid(UUID.randomUUID().toString());
         person.setEmail("user@email.com");
         person.setName("Augusto");
-        person.setGuid(UUID.randomUUID().toString());
+
         Book book = new Book();
         String guid = UUID.randomUUID().toString();
         book.setGuid(guid);
@@ -94,5 +102,42 @@ public class BookServiceTest {
         Assertions.assertEquals(guid, returned.guid());
         Assertions.assertEquals("Outro livro aqui", returned.title());
         Assertions.assertEquals(2006, returned.publishedYear());
+        Assertions.assertEquals(36, returned.guid().length());
+    }
+
+    @Test
+    void rateBookNotFail() throws BookNotFoundException {
+        CreateRatingDTO ratingDTO = new CreateRatingDTO(1);
+        String bookGuid = UUID.randomUUID().toString();
+        String userGuid = UUID.randomUUID().toString();
+        String bookAuthorGuid = UUID.randomUUID().toString();
+
+        Person userWhoRates = new Person();
+        userWhoRates.setGuid(userGuid);
+        userWhoRates.setEmail("user@email.com");
+        userWhoRates.setName("Nome Do User");
+
+        Person bookAuthor = new Person();
+        bookAuthor.setGuid(bookAuthorGuid);
+        bookAuthor.setEmail("author@email.com");
+        bookAuthor.setName("Nome do Autor");
+
+        Book ratedBook = new Book();
+        ratedBook.setGuid(bookGuid);
+        ratedBook.setTitle("Um livro bem ruim.");
+        ratedBook.setPublishedYear(2012);
+        ratedBook.setRegisteredBy(bookAuthor);
+
+        BDDMockito.given(this.bookRepository.findByGuid(bookGuid)).willReturn(Optional.of(ratedBook));
+        BDDMockito.given(this.personService.findByEmail(userWhoRates.getEmail())).willReturn(userWhoRates);
+
+        this.bookService.createRating(bookGuid, ratingDTO, userWhoRates);
+        BDDMockito.then(ratingRepository).should().save(ratingCaptor.capture());;
+        Rating returnedRating = this.ratingCaptor.getValue();
+
+        Assertions.assertEquals(userWhoRates.getEmail(), returnedRating.getRatedBy().getEmail());
+        Assertions.assertEquals(ratingDTO.setRating(), returnedRating.getRating());
+        Assertions.assertEquals(36, returnedRating.getGuid().length());
+        Assertions.assertNotNull(returnedRating.getGuid());
     }
 }
