@@ -38,8 +38,7 @@ public class PersonService implements UserDetailsService {
     public PersonDTO create(CreatePersonDTO createPersonDTO){
         LOGGER.info("Criando usuário...");
         String passwordEncoded = this.passwordEncoder.encode(createPersonDTO.password());
-        Person person = new Person(createPersonDTO, passwordEncoded);
-        this.personRepository.save(person);
+        Person person = this.personRepository.save(new Person(createPersonDTO, passwordEncoded));
         return new PersonDTO(person);
     }
 
