@@ -74,6 +74,10 @@ public class Book {
         return ratingList;
     }
 
+    public void setRatingList(Set<Rating> ratingList) {
+        this.ratingList = ratingList;
+    }
+
     public Double getAverageRating(){
         if (ratingList.isEmpty()){
             return 0.0;
