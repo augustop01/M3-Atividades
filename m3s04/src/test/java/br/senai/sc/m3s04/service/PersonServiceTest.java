@@ -29,16 +29,16 @@ public class PersonServiceTest {
 
     @Test
     void createUserWithNoFail() {
-        CreatePersonDTO person =
+        CreatePersonDTO createPersonDTO =
                 new CreatePersonDTO("Teste 01", "teste01@example.com", "UmaSenhaForte");
-        String passwordEncoded = this.passwordEncoder.encode(person.password());
+        String passwordEncoded = this.passwordEncoder.encode(createPersonDTO.password());
 
-        this.personService.create(person);
+        this.personService.create(createPersonDTO);
         verify(this.personRepository).save(this.personCaptor.capture());
         Person createdPerson = this.personCaptor.getValue();
 
-        Assertions.assertEquals(person.name(), createdPerson.getName());
-        Assertions.assertEquals(person.email(), createdPerson.getEmail());
+        Assertions.assertEquals(createPersonDTO.name(), createdPerson.getName());
+        Assertions.assertEquals(createPersonDTO.email(), createdPerson.getEmail());
         Assertions.assertNotNull(createdPerson.getGuid());
         Assertions.assertEquals(36, createdPerson.getGuid().length());
         Assertions.assertEquals(passwordEncoded, createdPerson.getPassword());
